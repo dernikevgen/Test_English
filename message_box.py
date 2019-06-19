@@ -1,6 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QLabel, QAction, QMessageBox, QApplication, QDesktopWidget
-import graphics
+
 
 class StartProject(QMainWindow):
 
@@ -89,9 +89,4 @@ class StartProject(QMainWindow):
         else:
             event.ignore()
 
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = StartProject()
-    sys.exit(app.exec_())
 

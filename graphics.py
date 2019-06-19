@@ -1,25 +1,21 @@
+import sys
 from PyQt5.QtCore import QBasicTimer
 from PyQt5.QtWidgets import *
 from PyQt5 import QtGui
 from PyQt5.QtGui import QPixmap, QBrush, QPainter, QColor
 from PyQt5.QtCore import Qt
-from class_method import ConnectDB, MethodFunc
-import sys
-
-i = 2
+from class_method import ConnectDB
 
 
-class Base(QMainWindow, ConnectDB, MethodFunc):
+class Base(QMainWindow, ConnectDB):
 
     def __init__(self):
-        '''
-        Основные параметры окна
-        '''
+
         super().__init__()
-        ConnectDB.__init__(self)
-        MethodFunc.__init__(self)
+        self.key_db = 1
+        self.true_input = 0
         self.setWindowTitle('Тестирование знаний')
-        self.setFixedSize(900, 600)
+        self.setFixedSize(910, 600)
         self.general_window()
         self.center()
 
@@ -28,8 +24,6 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
         Создание меню, основных виджетов,
         кнопок и надписей
         '''
-        global i
-
         cb = QCheckBox('Поставь галку', self)
         cb.move(60, 100)
         cb.adjustSize()
@@ -79,7 +73,7 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
 
         btn_1 = QLabel('Первая ->', self)
         btn_1.move(60, 148)
-        self.one = ConnectDB.select_table(self, 'one_form', 'verbs_form', i)
+        self.one = ConnectDB.select_table(self, 'one_form', 'verbs_form', self.key_db)
         self.line_1 = QLabel(self.one, self)
         self.line_1.move(153, 149)
         self.line_1_2 = QLabel(self.one, self)
@@ -88,32 +82,32 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
         btn_2 = QLabel('Вторая ->', self)
         btn_2.move(260, 150)
         self.line_2 = QLineEdit(self)
-        self.line_2.setMaxLength(10)
+        self.line_2.setMaxLength(14)
         self.line_2.move(350, 150)
-
         self.line_2_2 = QLabel(self)
         self.line_2_2.move(353, 198)
 
         btn_3 = QLabel('Третья ->', self)
         btn_3.move(460, 150)
         self.line_3 = QLineEdit(self)
-        self.line_3.setMaxLength(10)
+        self.line_3.setMaxLength(14)
         self.line_3.move(550, 150)
-
         self.line_3_2 = QLabel(self)
         self.line_3_2.move(553, 198)
 
         btn_t = QLabel('Перевод ->', self)
-        btn_t.move(650, 150)
+        btn_t.move(655, 150)
         self.line_t = QLineEdit(self)
-        self.line_t.setMaxLength(10)
+        self.line_t.setMaxLength(14)
+        self.line_t.setFixedSize(110, 30)
         self.line_t.move(750, 150)
+
         self.line_t_2 = QLabel(self)
         self.line_t_2.move(753, 198)
 
-        pix_map = QPixmap("images.jpeg")
+        self.pix_map = QPixmap("images.jpeg")
         img = QLabel(self)
-        img.setPixmap(pix_map)
+        img.setPixmap(self.pix_map)
         img.setGeometry(60, 270, 225, 225)
         lbl_img = QLabel('Это - Чак Паланик', self)
         lbl_img.setFont(QtGui.QFont("Times", 14, QtGui.QFont.Bold))
@@ -122,15 +116,25 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
         img.setStatusTip('Чак Паланик')
 
         self.max_val = ConnectDB.len_table(self, 'verbs_form')
-        lbl_limit = QLabel(f'{i} / {self.max_val}', self)
-        lbl_limit.setFont(QtGui.QFont('Times', 24, QtGui.QFont.Bold))
-        lbl_limit.adjustSize()
-        lbl_limit.move(560, 290)
+        self.lbl_limit = QLabel(f'{self.key_db} / {self.max_val}', self)
+        self.lbl_limit.setFont(QtGui.QFont('Times', 24, QtGui.QFont.Bold))
+        self.lbl_limit.adjustSize()
+        self.lbl_limit.move(410, 290)
 
-        lbl_lim_setStat = QLabel('Cтепень выполнения', self)
-        lbl_lim_setStat.setFont(QtGui.QFont('Times', 12, QtGui.QFont.Bold))
-        lbl_lim_setStat.adjustSize()
-        lbl_lim_setStat.move(500, 370)
+        lbl_lim_set_stat = QLabel('Cтепень выполнения', self)
+        lbl_lim_set_stat.setFont(QtGui.QFont('Times', 12, QtGui.QFont.Bold))
+        lbl_lim_set_stat.adjustSize()
+        lbl_lim_set_stat.move(350, 370)
+
+        self.true_limit = QLabel('Правильных ответов:', self)
+        self.true_limit.setFont(QtGui.QFont('Times', 14, QtGui.QFont.Bold))
+        self.true_limit.adjustSize()
+        self.true_limit.move(620, 280)
+        self.true_limit_2 = QLabel(f'{self.true_input} из {self.max_val * 3}', self)
+        self.true_limit_2.setFont(QtGui.QFont('Times', 14, QtGui.QFont.Bold))
+        self.true_limit_2.adjustSize()
+        self.true_limit_2.move(700, 320)
+
 
         btn_assert = QPushButton('Проверить', self)
         btn_assert.resize(btn_assert.sizeHint())
@@ -145,12 +149,12 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
 
         btn_next = QPushButton('Далее', self)
         btn_next.resize(btn_assert.sizeHint())
-        btn_next.clicked.connect(self.next_value)
+        btn_next.clicked.connect(self.check_input)
         btn_next.setGeometry(650, 440, 200, 25)
 
         self.show()
 
-    def draw_Lines(self, qp):
+    def draw_lines(self, qp):
         '''
         Отрисовка дисплеев
         '''
@@ -158,8 +162,8 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
         brush.setStyle(Qt.DiagCrossPattern)
         qp.setBrush(QColor('white'))
         '''Окно лимита'''
-        qp.drawRect(500, 270, 200, 80)
-        qp.drawRect(524, 285, 150, 50)
+        qp.drawRect(350, 270, 200, 80)
+        qp.drawRect(374, 285, 150, 50)
         '''Первая'''
         qp.drawRect(150, 152, 100, 25)
         qp.drawRect(150, 200, 100, 25)
@@ -168,7 +172,92 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
         '''Третья'''
         qp.drawRect(550, 200, 100, 25)
         '''Перевод'''
-        qp.drawRect(750, 200, 100, 25)
+        qp.drawRect(750, 200, 110, 25)
+
+    def check_input(self):
+        '''
+        Проверка введённых значений
+        '''
+        input_2 = self.line_2.text()
+        input_3 = self.line_3.text()
+        input_t = self.line_t.text()
+        two = ConnectDB.select_table(self, 'two_form', 'verbs_form', self.key_db)
+        three = ConnectDB.select_table(self, 'three_form', 'verbs_form', self.key_db)
+        trans = ConnectDB.select_table(self, 'translate', 'verbs_form', self.key_db)
+        if input_2 == two:
+            self.true_input += 1
+        if input_3 == three:
+            self.true_input += 1
+        if input_t == trans:
+            self.true_input += 1
+        self.true_limit_2.setText(f'{self.true_input} из {self.max_val * 3}')
+        self.next_value()
+
+    def show_verbs(self):
+        '''
+        Вывод правильных значений в нижние табло
+        '''
+        self.doAction()
+        two = ConnectDB.select_table(self, 'two_form', 'verbs_form', self.key_db)
+        three = ConnectDB.select_table(self, 'three_form', 'verbs_form', self.key_db)
+        trans = ConnectDB.select_table(self, 'translate', 'verbs_form', self.key_db)
+        self.line_2_2.setText(two)
+        self.line_3_2.setText(three)
+        self.line_t_2.setText(trans)
+        fixed_2 = self.line_2.text()
+        fixed_3 = self.line_3.text()
+        fixed_t = self.line_t.text()
+        print(len(fixed_2), len(fixed_3), len(fixed_t))
+        if len(fixed_2) == 0:
+            self.line_2.setMaxLength(0)
+        else:
+            self.line_2.setReadOnly(True)
+        if len(fixed_3) == 0:
+            self.line_3.setMaxLength(0)
+        else:
+            self.line_3.setReadOnly(True)
+        if len(fixed_t) == 0:
+            self.line_t.setMaxLength(0)
+        else:
+            self.line_t.setReadOnly(True)
+
+    def next_value(self):
+        '''
+        Следующее значение
+        и обнуление подсказок
+        '''
+        str_empty = ''
+        if self.key_db >= self.max_val:
+            sys.exit(app.exec_())
+        else:
+            self.key_db += 1
+            self.max_val = ConnectDB.len_table(self, 'verbs_form')
+            self.one = ConnectDB.select_table(self, 'one_form', 'verbs_form', self.key_db)
+            self.lbl_limit.setText(f'{self.key_db} / {self.max_val}')
+            self.line_1.setText(self.one)
+            self.line_1_2.setText(self.one)
+            self.line_2.setReadOnly(False)
+            self.line_3.setReadOnly(False)
+            self.line_t.setReadOnly(False)
+            self.line_2.setText(str_empty)
+            self.line_3.setText(str_empty)
+            self.line_t.setText(str_empty)
+            self.line_2_2.setText(str_empty)
+            self.line_3_2.setText(str_empty)
+            self.line_t_2.setText(str_empty)
+            self.line_2.setMaxLength(14)
+            self.line_3.setMaxLength(14)
+            self.line_t.setMaxLength(14)
+
+    def center(self):
+        '''
+        Центрирование окна
+        на запускаемом устройстве
+        '''
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
     def change_title(self, state):
         '''
@@ -177,7 +266,7 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
         if state == Qt.Checked:
             self.setWindowTitle('Галочку сними')
         else:
-            self.setWindowTitle('Проверка знаний')
+            self.setWindowTitle('Тестирование знаний')
 
     def timerEvent(self, e):
         '''
@@ -201,58 +290,13 @@ class Base(QMainWindow, ConnectDB, MethodFunc):
         else:
             self.timer.start(100, self)
 
-    def printer_func(self):
-        '''
-        Перебор элементов по id
-        '''
-        self.max_val = ConnectDB.len_table(self, 'verbs_form')
-        val_list = [j for j in range(1, self.max_val)]
-
-    def show_verbs(self):
-        '''
-        Вывод правильных значений в нижние табло
-        '''
-        self.doAction()
-        self.two = ConnectDB.select_table(self, 'two_form', 'verbs_form', i)
-        self.three = ConnectDB.select_table(self, 'three_form', 'verbs_form', i)
-        self.trans = ConnectDB.select_table(self, 'translate', 'verbs_form', i)
-        self.line_2_2.setText(self.two)
-        self.line_3_2.setText(self.three)
-        self.line_t_2.setText(self.trans)
-        self.line_2.setMaxLength(0)
-        self.line_3.setMaxLength(0)
-        self.line_t.setMaxLength(0)
-
-    def next_value(self):
-        '''
-        Следующее значение
-        и обнуление подсказок
-        '''
-        self.str_empty = ''
-        self.line_2_2.setText(self.str_empty)
-        self.line_3_2.setText(self.str_empty)
-        self.line_t_2.setText(self.str_empty)
-        self.line_2.setMaxLength(10)
-        self.line_3.setMaxLength(10)
-        self.line_t.setMaxLength(10)
-
-    def center(self):
-        '''
-        Центрирование окна
-        на запускаемом устройстве
-        '''
-        qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())
-
     def paintEvent(self, e):
         '''
         Для отрисовки дисплея
         '''
         qp = QPainter()
         qp.begin(self)
-        self.draw_Lines(qp)
+        self.draw_lines(qp)
         qp.end()
 
     def info(self):

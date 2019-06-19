@@ -67,15 +67,9 @@ class ConnectDB:
                 conn.commit()
 
 
-class MethodFunc:
-
-    pass
-
-
-
-conn_db = ConnectDB()
-
-len__tb = conn_db.len_table('verbs_form')
+# conn_db = ConnectDB()
+#
+# len__tb = conn_db.len_table('verbs_form')
 # for i in range(1, len__tb+1):
 #     a = conn_db.select_table('one_form', 'verbs_form', i)
 #     two = conn_db.select_table('two_form', 'verbs_form', i)
