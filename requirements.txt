@@ -1,0 +1,10 @@
+certifi==2019.6.16
+chardet==3.0.4
+html2text==2018.1.9
+idna==2.8
+psycopg2==2.8.3
+PyQt5==5.12.3
+PyQt5-sip==4.19.17
+PyQtWebEngine==5.12.1
+requests==2.22.0
+urllib3==1.25.3
