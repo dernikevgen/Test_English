@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import *
 from PyQt5 import QtGui
 from PyQt5.QtGui import QPixmap, QBrush, QPainter, QColor, QImage, QPalette
 from PyQt5.QtCore import Qt
-from .class_method import ConnectDB
+from class_method import ConnectDB
 
 
 class Base(QMainWindow, ConnectDB):
@@ -83,34 +83,41 @@ class Base(QMainWindow, ConnectDB):
         btn_1 = QLabel('Первая ->', self)
         btn_1.move(60, 148)
         self.line_1 = QLabel(self)
-        self.line_1.move(153, 149)
+        self.line_1.move(153, 151)
         self.line_1_2 = QLabel(self)
-        self.line_1_2.move(153, 198)
+        self.line_1_2.move(153, 200)
 
         btn_2 = QLabel('Вторая ->', self)
         btn_2.move(260, 150)
         self.line_2 = QLineEdit(self)
         self.line_2.setMaxLength(14)
+        self.line_2.setFixedSize(108, 33)
         self.line_2.move(350, 150)
         self.line_2_2 = QLabel(self)
-        self.line_2_2.move(353, 198)
+        self.line_2_2.move(353, 200)
 
         btn_3 = QLabel('Третья ->', self)
         btn_3.move(460, 150)
         self.line_3 = QLineEdit(self)
         self.line_3.setMaxLength(14)
-        self.line_3.move(550, 150)
+        self.line_3.setFixedSize(108, 33)
+        self.line_3.move(540, 150)
         self.line_3_2 = QLabel(self)
-        self.line_3_2.move(553, 198)
+        self.line_3_2.move(543, 200)
 
         btn_t = QLabel('Перевод ->', self)
         btn_t.move(655, 150)
         self.line_t = QLineEdit(self)
         self.line_t.setMaxLength(14)
-        self.line_t.setFixedSize(110, 30)
+        self.line_t.setFixedSize(108, 33)
         self.line_t.move(750, 150)
         self.line_t_2 = QLabel(self)
-        self.line_t_2.move(753, 198)
+        self.line_t_2.move(753, 200)
+
+        self.draw_fonts(self.line_1_2, self.line_1,
+                        self.line_2, self.line_2_2,
+                        self.line_3, self.line_3_2,
+                        self.line_t, self.line_t_2, )
 
         pix_map = QPixmap("images.jpeg")
         img = QLabel(self)
@@ -165,6 +172,14 @@ class Base(QMainWindow, ConnectDB):
         self.lbl_next.move(730, 480)
         self.show()
 
+    def draw_fonts(self, *args):
+        '''
+        Dont't repeat
+        '''
+        for i in args:
+            i.setFont(QtGui.QFont
+                      ('Arial', 13, QtGui.QFont.Light))
+
     def draw_lines(self, qp):
         '''
         Paint displays
@@ -175,14 +190,14 @@ class Base(QMainWindow, ConnectDB):
         '''Окно лимита'''
         qp.drawRect(350, 270, 200, 80)
         '''Первая'''
-        qp.drawRect(150, 152, 100, 25)
-        qp.drawRect(150, 200, 100, 25)
+        qp.drawRect(150, 152, 105, 30)
+        qp.drawRect(150, 200, 105, 30)
         '''Вторая'''
-        qp.drawRect(350, 200, 100, 25)
+        qp.drawRect(350, 200, 105, 30)
         '''Третья'''
-        qp.drawRect(550, 200, 100, 25)
+        qp.drawRect(540, 200, 105, 30)
         '''Перевод'''
-        qp.drawRect(750, 200, 110, 25)
+        qp.drawRect(750, 200, 105, 30)
 
     def start_program(self):
         '''
