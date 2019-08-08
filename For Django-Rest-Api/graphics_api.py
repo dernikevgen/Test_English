@@ -1,5 +1,5 @@
 import sys
-from random import shuffle
+from random import shuffle, sample
 from PyQt5.QtCore import QBasicTimer, QSize, QUrl
 from PyQt5.QtWidgets import *
 from PyQt5 import QtGui
@@ -20,7 +20,10 @@ class Base(QMainWindow, ConnectDjangoApi):
         self.general_window()
 
     def pre_start_program(self):
-
+        '''
+        Connect to server,choice value,
+        create dict and etc
+        '''
         self.value_list = ConnectDjangoApi.value_list(self)
         self.verbs_dict = ConnectDjangoApi.value_dict(self)
         self.max_flags = ConnectDjangoApi.count_input(self)
@@ -31,6 +34,66 @@ class Base(QMainWindow, ConnectDjangoApi):
         self.input_conteiner = {i: i for i in self.print_one_key}
         self.container = self.verbs_dict.copy()
         self.flag_back_btn_activate = False
+
+    def quanity_box(self):
+        '''
+        Setting quanity verbs on test
+        '''
+
+        qty_box = QDialog(self)
+        qty_box.setWindowTitle('Тестирование знаний')
+        qty_box.setWindowModality(Qt.WindowModal)
+        qty_box.setFixedSize(600, 290)
+        self.image_background(qty_box, 600, 600, "image_back_2.jpg")
+
+        editor = QSpinBox()
+        editor.setRange(1, self.max_val)
+        editor.setValue(3)
+        # editor.setFixedSize(600, 290)
+        editor.setGeometry(400, 50, 130, 50)
+
+        editor.setFont(QtGui.QFont
+                      ('Arial', 15, QtGui.QFont.Light))
+        editor.show()
+
+        lable_qty = QLabel('Установите кол-во глаголов,\n'
+                           'для тестирования знаний.\n'
+                           'Если вы закроете это окно,\n'
+                           'то кол-во будет максимальное.\n\n'
+                           '____________________________'
+                           '_______________',
+                           qty_box)
+        lable_qty .move(25, 40)
+        help_text = QLabel('Здесь можно ознакомиться\n'
+                           'с правилами к заданями.', qty_box)
+        help_text.move(25, 210)
+        self.draw_fonts(lable_qty, help_text)
+        help_btn = QPushButton('Ознакомиться', qty_box)
+        help_btn.resize(help_btn.sizeHint())
+        help_btn.adjustSize()
+        help_btn.setGeometry(400, 230, 160, 30)
+        help_btn.clicked.connect(self.buttom_browser)
+
+        next = QPushButton('Продолжить', qty_box)
+        next.resize(next.sizeHint())
+        next.adjustSize()
+        next.setGeometry(400, 130, 150, 30)
+        next.clicked.connect(qty_box.close)
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
+        qty_box.exec()
+
+    def calculate_quanity(self, qty):
+        '''
+        Func
+        :param qty:
+        :return: value_dict
+        of key for verbs
+        '''
+
+        pass
 
     def general_window(self):
         '''
@@ -78,9 +141,9 @@ class Base(QMainWindow, ConnectDjangoApi):
         '''
         Window space
         '''
-        self.image_background(self, 450, 300,)
-        back_map = QImage("image_back22.jpg")
-        back_map_2 = back_map.scaled(QSize(450, 300))
+        self.image_background(self, 910, 600)
+        back_map = QImage("image_back_1.jpg")
+        back_map_2 = back_map.scaled(QSize(910, 600))
         palette = QPalette()
         palette.setBrush(QPalette.Window, QBrush(back_map_2))
         self.setPalette(palette)
@@ -193,7 +256,6 @@ class Base(QMainWindow, ConnectDjangoApi):
         self.btn_next.blockSignals(True)
         self.lbl_next = QLabel(self)
         self.lbl_next.move(730, 480)
-
         self.show()
 
     def draw_fonts(self, *args):
@@ -241,9 +303,10 @@ class Base(QMainWindow, ConnectDjangoApi):
         hello.setWindowTitle('Внимание')
         hello.setWindowModality(Qt.WindowModal)
         hello.setFixedSize(500, 200)
+        self.image_background(hello, 600, 600, "image_back_2.jpg")
         lable_help = QLabel('Приложению необходим доступ в интернет', hello)
-        lable_help.setFont(QtGui.QFont("Times", 12, QtGui.QFont.Bold))
-        lable_help.move(50, 60)
+        lable_help.setFont(QtGui.QFont("Times", 14, QtGui.QFont.Bold))
+        lable_help.move(30, 60)
         thanks = QPushButton('Хорошо, спасибо', hello)
         thanks.resize(thanks.sizeHint())
         thanks.adjustSize()
@@ -261,6 +324,8 @@ class Base(QMainWindow, ConnectDjangoApi):
         '''
         try:
             self.pre_start_program()
+            if True:
+                self.quanity_box()
         except:
             self.message_box()
             sys.exit(app.exec_())
@@ -564,27 +629,27 @@ class Base(QMainWindow, ConnectDjangoApi):
         self.draw_lines(qp)
         qp.end()
 
-    def closeEvent(self, event):
-        '''
-        Try / except on quit
-        '''
-        if self.id == self.max_val-1:
-            reply = QMessageBox.question(self, 'Попытка выхода',
-                                         "Выйти - 'Yes', попробовать снова - 'Retry'",
-                                         QMessageBox.Yes | QMessageBox.No | QMessageBox.Retry,
-                                         QMessageBox.Retry)
-        else:
-            reply = QMessageBox.question(self, 'Попытка выхода',
-                                         "Вы действительно хотите выйти?",
-                                         QMessageBox.Yes | QMessageBox.No,
-                                         QMessageBox.No)
-        if reply == QMessageBox.Yes:
-            event.accept()
-        elif reply == QMessageBox.Retry:
-            event.ignore()
-            self.start_program()
-        else:
-            event.ignore()
+    # def closeEvent(self, event):
+    #     '''
+    #     Try / except on quit
+    #     '''
+    #     if self.id == self.max_val-1:
+    #         reply = QMessageBox.question(self, 'Попытка выхода',
+    #                                      "Выйти - 'Yes', попробовать снова - 'Retry'",
+    #                                      QMessageBox.Yes | QMessageBox.No | QMessageBox.Retry,
+    #                                      QMessageBox.Retry)
+    #     else:
+    #         reply = QMessageBox.question(self, 'Попытка выхода',
+    #                                      "Вы действительно хотите выйти?",
+    #                                      QMessageBox.Yes | QMessageBox.No,
+    #                                      QMessageBox.No)
+    #     if reply == QMessageBox.Yes:
+    #         event.accept()
+    #     elif reply == QMessageBox.Retry:
+    #         event.ignore()
+    #         self.start_program()
+    #     else:
+    #         event.ignore()
 
 
 if __name__ == '__main__':
