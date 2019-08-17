@@ -78,9 +78,3 @@ class ConnectDB:
                 print('Delete')
                 conn.commit()
 
-
-# connect = ConnectDB()
-# connect.insert_table('have', 'had',
-#                      'had', 'иметь')
-# a = connect.len_table()
-# print(a)
